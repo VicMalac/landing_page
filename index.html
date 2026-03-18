@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaaS Ecosystem | Engenharia de Software</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <!-- Tailwind CSS -->
+    <script>
+        // Suppress Tailwind CDN production warning
+        const originalWarn = console.warn;
+        console.warn = function() {
+            if (arguments[0] && arguments[0].includes && arguments[0].includes('cdn.tailwindcss.com should not be used in production')) {
+                return;
+            }
+            originalWarn.apply(console, arguments);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0f172a',
-                        card: '#1e293b',
+                        dark: 'var(--color-bg)',
+                        card: 'var(--color-card)',
                         primary: '#3b82f6',
                         secondary: '#8b5cf6',
                         accent: '#0ea5e9'
@@ -43,13 +55,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-dark text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+<body class="bg-dark text-[var(--color-text)] font-sans antialiased overflow-x-hidden selection:bg-primary selection:text-white transition-colors duration-500">
 
     <!-- Background Animated Blobs -->
     <div class="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob"></div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animate-float-slow"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-2000 animate-float-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-4000 animate-float-slow" style="animation-delay: 4s;"></div>
     </div>
 
     <!-- Navigation -->
@@ -57,15 +69,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                    <i data-lucide="layers" class="text-primary w-8 h-8"></i>
-                    <span class="text-white font-bold text-xl tracking-wider">SaaS<span class="text-primary">Ecosystem</span></span>
+                    <i data-lucide="code-2" class="text-primary w-8 h-8"></i>
+                    <span class="text-[var(--color-heading)] font-bold text-xl tracking-wider">Victor<span class="text-primary">Pereira</span></span>
                 </div>
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#home" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Início</a>
-                        <a href="#ecossistema" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">O Ecossistema</a>
-                        <a href="#tecnologias" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Tecnologias</a>
-                        <button class="open-modal bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)]">Falar com Desenvolvedor</button>
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="#home" class="nav-link hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Início</a>
+                        <a href="#ecossistema" class="nav-link hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Projetos</a>
+                        <a href="#tecnologias" class="nav-link hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Tecnologias</a>
+                        <button id="theme-toggle" class="p-2 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-slate-300 hover:text-white">
+                            <i id="theme-icon" data-lucide="sun" class="w-5 h-5"></i>
+                        </button>
+                        <button class="open-modal bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)]">Vamos Conversar</button>
                     </div>
                 </div>
             </div>
@@ -75,62 +90,95 @@
     <!-- Hero Section -->
     <section id="home" class="relative z-10 pt-32 pb-20 lg:pt-48 lg:pb-32 min-h-screen flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="reveal">
+            <div class="reveal-left">
                 <span class="px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase mb-6 inline-block">
-                    Arquitetura Escalável & Alta Performance
+                    Desenvolvedor Fullstack Sênior
                 </span>
-                <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-8 leading-tight">
-                    Construindo <br class="hidden md:block" />
-                    <span class="text-gradient">Plataformas Inteligentes</span>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-[var(--color-heading)] tracking-tight mb-8 leading-tight word-reveal">
+                    <span>Construindo</span> <span>Plataformas</span> <br class="hidden md:block" />
+                    <span class="text-gradient">Inteligentes</span> <span class="text-gradient">&</span> <span class="text-gradient">Escaláveis</span>
                 </h1>
-                <p class="mt-4 max-w-3xl mx-auto text-xl text-slate-400 leading-relaxed mb-10">
-                    Um ecossistema completo de sistemas SaaS interligados. Da gestão de RH e contratos digitais ao controle operacional, logística e força de vendas mobile. Tudo integrado, seguro e eficiente.
+                <p class="mt-4 max-w-3xl mx-auto text-xl text-[var(--color-text-muted)] leading-relaxed mb-10">
+                    Especializado na criação de arquiteturas complexas, microsserviços e front-ends imersivos. Transformo desafios de negócios em soluções de software de alto impacto.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#ecossistema" class="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2">
-                        Explorar Módulos <i data-lucide="arrow-down" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#tecnologias" class="glass-card hover:bg-white/5 text-white font-bold py-4 px-8 rounded-full transition-all flex items-center justify-center gap-2">
-                        Ver Stack Tecnológico
+                    <button class="open-modal bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.6)] flex items-center justify-center gap-2 text-lg">
+                        Iniciar um Projeto <i data-lucide="rocket" class="w-5 h-5"></i>
+                    </button>
+                    <a href="#ecossistema" class="glass-card hover:bg-black/5 dark:hover:bg-white/5 text-slate-800 dark:text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2" style="color: var(--color-heading);">
+                        Explorar Portfólio
                     </a>
                 </div>
             </div>
             
             <!-- Hero Dashboard Preview (Abstract) -->
-            <div class="mt-20 reveal animation-delay-500 relative max-w-5xl mx-auto">
+            <div class="mt-20 reveal-right animation-delay-500 relative max-w-5xl mx-auto animate-float-slow">
                 <div class="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl blur opacity-30"></div>
-                <div class="relative glass-card rounded-2xl p-4 sm:p-8 border border-white/10 shadow-2xl flex flex-col md:flex-row gap-6 animate-float">
-                    <div class="flex-1 bg-dark/50 rounded-xl p-6 border border-white/5">
-                        <div class="h-4 w-1/3 bg-slate-700 rounded mb-6"></div>
-                        <div class="space-y-4">
-                            <div class="h-12 w-full bg-slate-800/50 rounded flex items-center px-4 gap-4">
-                                <div class="w-8 h-8 rounded-full bg-primary/20"></div>
-                                <div class="h-2 w-24 bg-slate-600 rounded"></div>
-                                <div class="h-2 w-16 bg-green-500/50 rounded ml-auto"></div>
+                <div class="relative glass-card rounded-2xl p-4 sm:p-8 border-[var(--color-border)] shadow-2xl flex flex-col md:flex-row gap-6 bg-[var(--color-card-bg)]">
+                    <!-- Main Chart Area -->
+                    <div class="flex-1 bg-[var(--color-chart-bg)] rounded-xl p-6 border border-[var(--color-border)] flex flex-col relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="text-lg font-bold text-[var(--color-heading)] mb-1">Crescimento de Receita (MRR)</h3>
+                                <p class="text-xs text-[var(--color-text-muted)]">Desempenho nos últimos 6 meses</p>
                             </div>
-                            <div class="h-12 w-full bg-slate-800/50 rounded flex items-center px-4 gap-4">
-                                <div class="w-8 h-8 rounded-full bg-secondary/20"></div>
-                                <div class="h-2 w-32 bg-slate-600 rounded"></div>
-                                <div class="h-2 w-12 bg-blue-500/50 rounded ml-auto"></div>
+                            <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold flex items-center gap-1 border border-green-500/30">
+                                <i data-lucide="trending-up" class="w-3 h-3"></i> +32%
+                            </span>
+                        </div>
+                        
+                        <!-- Bar Chart Mockup -->
+                        <div class="flex-1 flex items-end gap-3 sm:gap-6 mt-auto h-48">
+                            <div class="animate-scale-y delay-100 w-1/6 bg-blue-500/30 hover:bg-blue-500/50 transition-colors rounded-t-md h-[30%] relative group cursor-pointer">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)]">R$ 12k</div>
                             </div>
-                            <div class="h-12 w-full bg-slate-800/50 rounded flex items-center px-4 gap-4">
-                                <div class="w-8 h-8 rounded-full bg-accent/20"></div>
-                                <div class="h-2 w-20 bg-slate-600 rounded"></div>
-                                <div class="h-2 w-20 bg-purple-500/50 rounded ml-auto"></div>
+                            <div class="animate-scale-y delay-200 w-1/6 bg-blue-500/40 hover:bg-blue-500/60 transition-colors rounded-t-md h-[45%] relative group cursor-pointer">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)]">R$ 18k</div>
                             </div>
+                            <div class="animate-scale-y delay-300 w-1/6 bg-blue-500/50 hover:bg-blue-500/70 transition-colors rounded-t-md h-[35%] relative group cursor-pointer">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)]">R$ 15k</div>
+                            </div>
+                            <div class="animate-scale-y delay-400 w-1/6 bg-secondary/50 hover:bg-secondary/70 transition-colors rounded-t-md h-[60%] relative group cursor-pointer">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)]">R$ 24k</div>
+                            </div>
+                            <div class="animate-scale-y delay-500 w-1/6 bg-secondary/60 hover:bg-secondary/80 transition-colors rounded-t-md h-[80%] relative group cursor-pointer">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)]">R$ 32k</div>
+                            </div>
+                            <div class="animate-scale-y delay-600 w-1/6 bg-gradient-to-t from-primary to-secondary rounded-t-md h-[100%] relative group cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[var(--color-bg)] text-xs text-[var(--color-text)] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-[var(--color-border)] whitespace-nowrap z-10">R$ 45k</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-3 text-[10px] text-[var(--color-text-muted)] font-medium px-1">
+                            <span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span><span>MAI</span><span class="text-primary font-bold">JUN</span>
                         </div>
                     </div>
-                    <div class="w-full md:w-1/3 space-y-6">
-                        <div class="bg-dark/50 h-32 rounded-xl p-4 border border-white/5 flex flex-col justify-between">
-                            <div class="h-3 w-1/2 bg-slate-700 rounded"></div>
-                            <div class="h-8 w-3/4 bg-primary/40 rounded mt-auto"></div>
+
+                    <!-- Sidebar Metrics Area -->
+                    <div class="w-full md:w-1/3 space-y-6 flex flex-col">
+                        <div class="bg-[var(--color-chart-bg)] rounded-xl p-5 border border-[var(--color-border)] flex-1 relative overflow-hidden group hover:border-emerald-500/30 transition-colors">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-sm font-medium text-[var(--color-text)]">Novos Usuários</h4>
+                            </div>
+                            <div class="text-3xl font-bold text-[var(--color-heading)] mb-1">2,845</div>
+                            <p class="text-xs text-emerald-400 flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +14.5% vs último mês</p>
                         </div>
-                        <div class="bg-dark/50 h-32 rounded-xl p-4 border border-white/5 flex flex-col justify-between">
-                            <div class="h-3 w-1/2 bg-slate-700 rounded"></div>
-                            <div class="flex gap-2 mt-auto">
-                                <div class="h-8 w-8 bg-secondary/40 rounded-full"></div>
-                                <div class="h-8 w-8 bg-secondary/40 rounded-full"></div>
-                                <div class="h-8 w-8 bg-secondary/40 rounded-full"></div>
+
+                        <div class="bg-[var(--color-chart-bg)] rounded-xl p-5 border border-[var(--color-border)] flex-1 relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <i data-lucide="activity" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-sm font-medium text-[var(--color-text)]">Tempo de Uptime</h4>
+                            </div>
+                            <div class="text-3xl font-bold text-[var(--color-heading)] mb-1">99.9%</div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
+                                <div class="bg-blue-500 h-1.5 rounded-full w-[99.9%]"></div>
                             </div>
                         </div>
                     </div>
@@ -139,24 +187,42 @@
         </div>
     </section>
 
-    <!-- Ecossistema Section -->
-    <section id="ecossistema" class="relative z-10 py-24 bg-dark/50">
+    <!-- Social Proof Section -->
+    <section class="py-12 border-y border-white/5 bg-dark/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal-scale">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mb-8">Soluções Desenvolvidas Para</p>
+            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <a href="https://claritio.com.br" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 font-bold text-2xl text-[var(--color-heading)] transition-colors group">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+                    Claritio
+                </a>
+                <a href="#" class="flex items-center gap-3 font-bold text-2xl text-[var(--color-heading)] transition-colors group">
+                    <div class="bg-pink-600 text-white p-2 rounded-lg group-hover:scale-110 transition-transform"><i data-lucide="gem" class="w-6 h-6"></i></div>
+                    Via Dolce
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Projects Section -->
+    <section id="ecossistema" class="relative z-10 py-24 bg-[var(--color-section-alt)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-20 reveal">
-                <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">O Ecossistema <span class="text-gradient">SaaS</span></h2>
-                <p class="text-slate-400 max-w-2xl mx-auto text-lg">Seis módulos robustos operando em sinergia perfeita para cobrir 100% das necessidades corporativas.</p>
+                <h2 class="text-3xl md:text-5xl font-bold text-[var(--color-heading)] mb-6">Projetos em <span class="text-gradient">Destaque</span></h2>
+                <p class="text-[var(--color-text-muted)] max-w-2xl mx-auto text-lg">Um portfólio de soluções criadas para resolver problemas complexos com tecnologia moderna.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 tilt-wrapper">
                 
                 <!-- Card 1: Intranet -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-pink-500/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-full border border-pink-500/30">Via Dolce</div>
                     <div class="w-14 h-14 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="network" class="text-blue-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Intranet & Comercial</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Núcleo de relacionamento com foco em consultoras e clientes. Segmentação inteligente, VDPag para transações, gestão de showroom e RBAC.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">Intranet & Comercial</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Núcleo de relacionamento com foco em consultoras e clientes. Segmentação inteligente, VDPag para transações, gestão de showroom e RBAC.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary"></i> Listas e Segmentações</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary"></i> Lista de Desejos Dinâmica</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary"></i> Integração ZapSign & Webhooks</li>
@@ -164,13 +230,14 @@
                 </div>
 
                 <!-- Card 2: Claritio HRIS -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default delay-100">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default delay-100 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-blue-500/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30">Claritio</div>
                     <div class="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="users" class="text-purple-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Claritio (HRIS)</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Sistema completo de RH centralizando a gestão de colaboradores, jornada de trabalho, PDI e recrutamento digital.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">Claritio (HRIS)</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Sistema completo de RH centralizando a gestão de colaboradores, jornada de trabalho, PDI e recrutamento digital.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-secondary"></i> Ponto via QR Code e Totem</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-secondary"></i> Gamificação e PDI</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-secondary"></i> Admissão Digital & ATS</li>
@@ -178,13 +245,14 @@
                 </div>
 
                 <!-- Card 3: Garantias -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default delay-200">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default delay-200 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-pink-500/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-full border border-pink-500/30">Via Dolce</div>
                     <div class="w-14 h-14 bg-orange-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="wrench" class="text-orange-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Garantias / Via Dolce</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Assistência técnica e logística. Fluxo visual em Kanban, captura remota de fotos e impressão térmica de etiquetas.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">Garantias / Via Dolce</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Assistência técnica e logística. Fluxo visual em Kanban, captura remota de fotos e impressão térmica de etiquetas.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-orange-400"></i> Kanban Drag & Drop</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-orange-400"></i> Fotos Mobile ➔ Desktop (QR)</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-orange-400"></i> Gestão de Lotes (Banho/Solda)</li>
@@ -192,13 +260,14 @@
                 </div>
 
                 <!-- Card 4: Contratos -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-pink-500/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-full border border-pink-500/30">Via Dolce</div>
                     <div class="w-14 h-14 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="file-signature" class="text-emerald-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">Middleware de Contratos</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Motor avançado que conecta Jotform, ZapSign e Google Drive. Mesclagem dinâmica de dados em templates .docx convertidos para PDF.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">Middleware de Contratos</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Motor avançado que conecta Jotform, ZapSign e Google Drive. Mesclagem dinâmica de dados em templates .docx convertidos para PDF.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Sincronização Bidirecional (qid_map)</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Validação Liveness & Selfie</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i> Data Locking e Sanitização</li>
@@ -206,13 +275,14 @@
                 </div>
 
                 <!-- Card 5: CRM & ERP -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default delay-100">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default delay-100 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-pink-500/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-full border border-pink-500/30">Via Dolce</div>
                     <div class="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="briefcase" class="text-cyan-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">CRM & ERP de Obras</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Fluxo comercial inteligente. Geração de orçamentos em PDF, assinaturas digitais e conversão automática de orçamentos em obras.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">CRM & ERP de Obras</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Fluxo comercial inteligente. Geração de orçamentos em PDF, assinaturas digitais e conversão automática de orçamentos em obras.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> Conversão Orçamento ➔ Projeto</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> Modo Offline (IndexedDB)</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i> Envio via WhatsApp e Link Público</li>
@@ -220,13 +290,14 @@
                 </div>
 
                 <!-- Card 6: Mobile App -->
-                <div class="glass-card rounded-2xl p-8 transition-all duration-300 glow-hover reveal group cursor-default delay-200">
+                <div class="glass-card tilt-card glow-effect rounded-2xl p-8 transition-all duration-300 glow-hover reveal-scale group cursor-default delay-200 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-pink-500/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-full border border-pink-500/30">Via Dolce</div>
                     <div class="w-14 h-14 bg-pink-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <i data-lucide="smartphone" class="text-pink-400 w-7 h-7"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4">App Força de Vendas</h3>
-                    <p class="text-slate-400 text-sm mb-6 line-clamp-3">Aplicativo focado em consultoras. Controle de maleta, carrinho de compras, histórico de clientes e dashboard financeiro.</p>
-                    <ul class="text-sm text-slate-500 space-y-2 mb-6">
+                    <h3 class="text-xl font-bold text-[var(--color-heading)] mb-4">App Força de Vendas</h3>
+                    <p class="text-[var(--color-text-muted)] text-sm mb-6 line-clamp-3">Aplicativo focado em consultoras. Controle de maleta, carrinho de compras, histórico de clientes e dashboard financeiro.</p>
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-2 mb-6">
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-pink-400"></i> Controle de Maleta e Inventário</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-pink-400"></i> Carrinho de Vendas Rápido</li>
                         <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-pink-400"></i> Notificações em Tempo Real</li>
@@ -241,141 +312,224 @@
     <section id="tecnologias" class="relative z-10 py-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 reveal">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Stack Tecnológico</h2>
-                <p class="text-slate-400">Poder, escalabilidade e integrações modernas.</p>
+                <h2 class="text-3xl md:text-4xl font-bold text-[var(--color-heading)] mb-4">Stack Tecnológico</h2>
+                <p class="text-[var(--color-text-muted)]">Poder, escalabilidade e integrações modernas.</p>
             </div>
             
-            <div class="flex flex-wrap justify-center gap-6 reveal delay-100">
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-primary/50 transition-colors">
-                    <i data-lucide="database" class="text-yellow-400"></i> <span class="text-white font-medium">Firebase (Auth, Firestore, Functions)</span>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 reveal-scale delay-100">
+                
+                <!-- AI Integration -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="bot" class="text-purple-500 w-7 h-7 animate-pulse"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">IA Integrada</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">OpenAI, Claude, Agents</p>
                 </div>
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-accent/50 transition-colors">
-                    <i data-lucide="wind" class="text-cyan-400"></i> <span class="text-white font-medium">Tailwind CSS</span>
+
+                <!-- Node.js / Backend -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-green-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="server" class="text-green-500 w-7 h-7 animate-float-slow"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Node.js & TS</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">APIs REST e GraphQL</p>
                 </div>
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-blue-500/50 transition-colors">
-                    <i data-lucide="cloud" class="text-blue-500"></i> <span class="text-white font-medium">Google Drive API</span>
+
+                <!-- React / Next.js -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-cyan-400/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="layout" class="text-cyan-400 w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">React & Next.js</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">Interfaces dinâmicas e SSR</p>
                 </div>
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-purple-500/50 transition-colors">
-                    <i data-lucide="pen-tool" class="text-purple-400"></i> <span class="text-white font-medium">ZapSign & Jotform</span>
+
+                <!-- Cloud & Docker -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="box" class="text-blue-500 w-7 h-7 animate-float-slow" style="animation-delay: 1s;"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Docker & AWS</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">Deploy e Escalabilidade</p>
                 </div>
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-blue-300/50 transition-colors">
-                    <i data-lucide="search" class="text-blue-300"></i> <span class="text-white font-medium">Algolia Search</span>
+
+                <!-- Firebase -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-yellow-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(250,204,21,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-yellow-400/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="database" class="text-yellow-400 w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Firebase</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">Auth, Firestore, Functions</p>
                 </div>
-                <div class="glass-card px-6 py-4 rounded-full flex items-center gap-3 border border-white/10 hover:border-green-400/50 transition-colors">
-                    <i data-lucide="hard-drive" class="text-green-400"></i> <span class="text-white font-medium">IndexedDB (Offline)</span>
+
+                <!-- Tailwind -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-teal-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(45,212,191,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-teal-400/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="wind" class="text-teal-400 w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Tailwind CSS</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">Estilização moderna</p>
                 </div>
+
+                <!-- Integrações (Drive) -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-blue-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(96,165,250,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-blue-400/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="cloud" class="text-blue-400 w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Cloud APIs</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">Google Workspace, etc.</p>
+                </div>
+
+                <!-- Outros -->
+                <div class="group relative glass-card p-6 rounded-2xl border-[var(--color-border)] hover:border-rose-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(251,113,133,0.2)] hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-rose-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-14 h-14 bg-rose-400/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="plug-zap" class="text-rose-400 w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-[var(--color-heading)] font-bold text-lg mb-2">Integrações</h3>
+                    <p class="text-xs text-[var(--color-text-muted)]">ZapSign, Stripe, Algolia</p>
+                </div>
+
             </div>
         </div>
     </section>
 
     <!-- Footer / Contato CTA -->
-    <footer id="contato" class="relative z-10 border-t border-white/10 bg-dark/80 backdrop-blur-lg pt-16 pb-8">
+    <footer id="contato" class="relative z-10 border-t border-[var(--color-border)] bg-[var(--color-card-bg)] backdrop-blur-lg pt-16 pb-8">
         <div class="max-w-4xl mx-auto px-4 text-center reveal">
-            <h2 class="text-3xl font-bold text-white mb-6">Pronto para o próximo nível?</h2>
-            <p class="text-slate-400 mb-8">Experiência comprovada na criação de arquiteturas complexas, microsserviços e front-ends imersivos.</p>
+            <h2 class="text-3xl font-bold text-[var(--color-heading)] mb-6">Pronto para o próximo nível?</h2>
+            <p class="text-[var(--color-text-muted)] mb-8">Experiência comprovada na criação de arquiteturas complexas, microsserviços e front-ends imersivos.</p>
             
             <!-- Perfil do Desenvolvedor -->
             <div class="glass-card max-w-lg mx-auto p-6 rounded-2xl mb-8 flex flex-col items-center">
                 <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-4 border border-primary/30">
                     <i data-lucide="terminal" class="text-primary w-10 h-10"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">Victor Pereira</h3>
+                <h3 class="text-2xl font-bold text-[var(--color-heading)] mb-1">Victor Pereira</h3>
                 <p class="text-primary font-medium mb-4">Desenvolvedor Fullstack</p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-slate-400 w-full justify-center">
-                    <a href="mailto:contato@claritio.com.br" class="flex items-center gap-2 justify-center hover:text-white transition-colors">
-                        <i data-lucide="mail" class="w-4 h-4 text-slate-500"></i> contato@claritio.com.br
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm text-[var(--color-text-muted)] w-full justify-center">
+                    <a href="mailto:contato@claritio.com.br" class="flex items-center gap-2 justify-center hover:text-primary transition-colors">
+                        <i data-lucide="mail" class="w-4 h-4 text-[var(--color-text-muted)]"></i> contato@claritio.com.br
                     </a>
-                    <a href="https://wa.me/5511972815968" target="_blank" class="flex items-center gap-2 justify-center hover:text-white transition-colors">
-                        <i data-lucide="phone" class="w-4 h-4 text-slate-500"></i> (11) 97281-5968
+                    <a href="https://wa.me/5511972815968" target="_blank" class="flex items-center gap-2 justify-center hover:text-primary transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4 text-[var(--color-text-muted)]"></i> (11) 97281-5968
                     </a>
                 </div>
             </div>
 
-            <button class="open-modal inline-flex items-center gap-2 bg-white text-dark hover:bg-slate-200 font-bold py-3 px-8 rounded-full transition-all transform hover:-translate-y-1">
-                <i data-lucide="message-circle" class="w-5 h-5"></i> Iniciar Conversa
+            <button class="open-modal inline-flex items-center gap-2 bg-primary text-white hover:bg-blue-600 font-bold py-4 px-10 rounded-full transition-all transform hover:-translate-y-1 hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.5)] text-lg mt-4">
+                <i data-lucide="message-circle" class="w-6 h-6"></i> Iniciar Conversa
             </button>
+            <p class="mt-4 text-xs text-[var(--color-text-muted)] font-medium tracking-wide"><i data-lucide="clock" class="inline w-3 h-3"></i> VAGAS LIMITADAS PARA CONSULTORIA GRATUITA ESTE MÊS</p>
             
-            <div class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-slate-500 text-sm">
+            <div class="mt-16 pt-8 border-t border-[var(--color-border)] flex flex-col md:flex-row items-center justify-between text-[var(--color-text-muted)] text-sm">
                 <p>&copy; 2026 SaaS Ecosystem Portfolio. Todos os direitos reservados a Victor Pereira.</p>
                 <div class="flex gap-4 mt-4 md:mt-0">
-                    <a href="#" class="hover:text-primary transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
-                    <a href="#" class="hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="https://github.com/VicMalac" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                    <a href="https://www.linkedin.com/in/vicmalac" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Contact Modal -->
-    <div id="contactModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-dark/80 backdrop-blur-sm">
-        <div class="modal-content relative w-full max-w-lg glass-card rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
+    <div id="contactModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[var(--color-bg)]/80 backdrop-blur-md transition-opacity duration-300">
+        <div class="modal-content relative w-full max-w-lg glass-card rounded-2xl p-6 sm:p-8 border border-primary/20 shadow-[0_0_50px_rgba(59,130,246,0.15)] bg-[var(--color-card-bg)] transform scale-95 opacity-0 transition-all duration-300 ease-out overflow-hidden">
+            
+            <!-- Glow decoration -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+
             <!-- Close Button -->
-            <button id="closeModal" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <button id="closeModal" class="absolute top-4 right-4 z-10 text-[var(--color-text-muted)] hover:text-primary transition-colors bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
             <!-- Modal Header -->
-            <div class="mb-8">
-                <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-primary">
-                    <i data-lucide="message-square" class="w-6 h-6"></i>
+            <div class="mb-8 relative z-10">
+                <div class="w-14 h-14 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center mb-5 text-primary shadow-lg border border-primary/20">
+                    <i data-lucide="sparkles" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Falar com Desenvolvedor</h3>
-                <p class="text-slate-400 text-sm">Preencha os dados abaixo para entrarmos em contato e discutirmos o seu projeto.</p>
+                <h3 class="text-3xl font-extrabold text-[var(--color-heading)] mb-2 tracking-tight">Iniciar Projeto</h3>
+                <p class="text-[var(--color-text-muted)] text-sm leading-relaxed">Conte-me um pouco sobre o seu desafio. Retornarei o contato o mais breve possível para explorarmos as melhores soluções.</p>
             </div>
 
             <!-- Modal Form -->
             <form id="contactForm" class="space-y-6">
                 <!-- Name Field -->
                 <div>
-                    <label for="name" class="block text-sm font-medium text-slate-300 mb-1.5 flex justify-between items-baseline">
+                    <label for="name" class="block text-sm font-medium text-[var(--color-text)] mb-1.5 flex justify-between items-baseline">
                         <span>Nome Completo</span>
-                        <span class="text-xs text-slate-500 font-normal">Ex: João Silva</span>
+                        <span class="text-xs text-[var(--color-text-muted)] font-normal">Ex: João Silva</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="user" class="w-5 h-5 text-slate-500"></i>
+                            <i data-lucide="user" class="w-5 h-5 text-[var(--color-text-muted)]"></i>
                         </div>
                         <input type="text" id="name" name="name" required
-                            class="block w-full pl-10 pr-3 py-2.5 bg-dark/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                            class="block w-full pl-10 pr-3 py-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
                             placeholder="Seu nome">
                     </div>
                 </div>
 
                 <!-- Email Field -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5 flex justify-between items-baseline">
+                    <label for="email" class="block text-sm font-medium text-[var(--color-text)] mb-1.5 flex justify-between items-baseline">
                         <span>E-mail Corporativo</span>
-                        <span class="text-xs text-slate-500 font-normal">Ex: joao@empresa.com</span>
+                        <span class="text-xs text-[var(--color-text-muted)] font-normal">Ex: joao@empresa.com</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="mail" class="w-5 h-5 text-slate-500"></i>
+                            <i data-lucide="mail" class="w-5 h-5 text-[var(--color-text-muted)]"></i>
                         </div>
                         <input type="email" id="email" name="email" required
-                            class="block w-full pl-10 pr-3 py-2.5 bg-dark/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                            class="block w-full pl-10 pr-3 py-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
                             placeholder="Seu e-mail de trabalho">
                     </div>
                 </div>
 
                 <!-- Company Field -->
                 <div>
-                    <label for="company" class="block text-sm font-medium text-slate-300 mb-1.5 flex justify-between items-baseline">
-                        <span>Empresa</span>
-                        <span class="text-xs text-slate-500 font-normal">Sua organização ou projeto</span>
+                    <label for="company" class="block text-sm font-medium text-[var(--color-text)] mb-1.5 flex justify-between items-baseline">
+                        <span>Empresa / Projeto</span>
+                        <span class="text-xs text-[var(--color-text-muted)] font-normal">Opcional</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="building" class="w-5 h-5 text-slate-500"></i>
+                            <i data-lucide="building" class="w-5 h-5 text-[var(--color-text-muted)]"></i>
                         </div>
-                        <input type="text" id="company" name="company" required
-                            class="block w-full pl-10 pr-3 py-2.5 bg-dark/50 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                        <input type="text" id="company" name="company"
+                            class="block w-full pl-10 pr-3 py-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
                             placeholder="Nome da sua empresa">
+                    </div>
+                </div>
+
+                <!-- Message Field -->
+                <div>
+                    <label for="message" class="block text-sm font-medium text-[var(--color-text)] mb-1.5 flex justify-between items-baseline">
+                        <span>Mensagem</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                            <i data-lucide="align-left" class="w-5 h-5 text-[var(--color-text-muted)] mt-0.5"></i>
+                        </div>
+                        <textarea id="message" name="message" required rows="3"
+                            class="block w-full pl-10 pr-3 py-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none"
+                            placeholder="Descreva brevemente sua necessidade..."></textarea>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
-                    class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group">
+                    class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center gap-2 group mt-8 transform hover:-translate-y-0.5">
                     <span>Enviar Mensagem</span>
                     <i data-lucide="send" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
                 </button>
@@ -384,6 +538,6 @@
     </div>
 
     <!-- Main Script -->
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
