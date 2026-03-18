@@ -6,11 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 20) {
-            navbar.classList.add('shadow-lg', 'bg-dark/80', 'border-b', 'border-white/10');
-            navbar.classList.remove('border-b-0');
+            navbar.classList.add('shadow-lg', 'bg-[var(--color-bg)]', 'border-b', 'border-[var(--color-border)]');
+            navbar.classList.remove('border-b-0', 'bg-transparent');
+            navbar.style.backdropFilter = 'blur(12px)';
         } else {
-            navbar.classList.remove('shadow-lg', 'bg-dark/80', 'border-b', 'border-white/10');
-            navbar.classList.add('border-b-0');
+            navbar.classList.remove('shadow-lg', 'bg-[var(--color-bg)]', 'border-b', 'border-[var(--color-border)]');
+            navbar.classList.add('border-b-0', 'bg-transparent');
+            navbar.style.backdropFilter = 'none';
         }
     });
 
@@ -127,9 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         navLinks.forEach(link => {
-            link.classList.remove('active', 'text-white');
+            link.classList.remove('active', 'text-primary');
             if (link.getAttribute('href').includes(current)) {
-                link.classList.add('active', 'text-white');
+                link.classList.add('active', 'text-primary');
             }
         });
     });
