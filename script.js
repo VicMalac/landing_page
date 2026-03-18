@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Atualizar ano do copyright
+    const yearSpan = document.getElementById('current-year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+
     // Initialize Lucide Icons
     lucide.createIcons();
 
@@ -127,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         navLinks.forEach(link => {
-            link.classList.remove('active', 'text-white');
+            link.classList.remove('active', 'text-primary');
             if (link.getAttribute('href').includes(current)) {
-                link.classList.add('active', 'text-white');
+                link.classList.add('active', 'text-primary');
             }
         });
     });
