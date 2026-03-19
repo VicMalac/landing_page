@@ -1,0 +1,29 @@
+-------------------------------------------------------------------
+
+ARQUIVOS IGNORADOS PELO GIT (Não sobem para o GitHub)
+
+-------------------------------------------------------------------
+
+Variáveis de Ambiente (Senhas, chaves privadas, etc)
+
+.env
+.env.local
+.env.development
+.env.production
+
+Pastas de Dependências (Para quando você usar npm/yarn/vite)
+
+node_modules/
+package-lock.json
+yarn.lock
+
+Pastas de Build/Produção
+
+dist/
+build/
+out/
+
+Arquivos do Sistema Operacional
+
+.DS_Store
+Thumbs.db
