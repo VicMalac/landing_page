@@ -9,6 +9,102 @@ document.addEventListener('DOMContentLoaded', () => {
     const supabaseKey = CONFIG.SUPABASE_KEY;
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // ======= AUTHENTICATION =======
+    const loginContainer = document.getElementById('login-container');
+    const dashboardContent = document.getElementById('dashboard-content');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const loginSubmitBtn = document.getElementById('login-submit-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Check session on load
+    checkSession();
+
+    // Listen for auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+            handleSession(session);
+        } else if (event === 'SIGNED_OUT') {
+            handleSession(null);
+        }
+    });
+
+    async function checkSession() {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+            console.error('Error checking session:', error);
+            return;
+        }
+        handleSession(session);
+    }
+
+    function handleSession(session) {
+        if (session) {
+            // User is logged in
+            loginContainer.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            fetchLeads();
+        } else {
+            // User is not logged in
+            loginContainer.classList.remove('hidden');
+            dashboardContent.classList.add('hidden');
+            logoutBtn.classList.add('hidden');
+            
+            // Re-initialize Lucide icons in the login form if it's shown
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+    }
+
+    // Login logic
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        loginError.classList.add('hidden');
+        loginSubmitBtn.disabled = true;
+        const originalBtnText = loginSubmitBtn.innerHTML;
+        loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>';
+        if (window.lucide) window.lucide.createIcons();
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                throw error;
+            }
+            
+            // Clear form
+            loginForm.reset();
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            loginError.textContent = error.message === 'Invalid login credentials' ? 'Credenciais inválidas.' : 'Erro ao fazer login. Tente novamente.';
+            loginError.classList.remove('hidden');
+        } finally {
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.innerHTML = originalBtnText;
+            if (window.lucide) window.lucide.createIcons();
+        }
+    });
+
+    // Logout logic
+    logoutBtn.addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Logout error:', error);
+            alert('Erro ao sair. Tente novamente.');
+        }
+    });
+
+
     // ======= FETCH AND RENDER LEADS =======
     const tableBody = document.getElementById('leads-table-body');
     const totalLeadsSpan = document.getElementById('total-leads');
@@ -120,9 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
-
-    // Load data
-    fetchLeads();
 
     // ======= THEME TOGGLE (Same logic as main page) =======
     const themeToggleBtn = document.getElementById('theme-toggle');

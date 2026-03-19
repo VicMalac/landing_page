@@ -94,6 +94,9 @@
                     <a href="./index.html" class="text-sm font-medium text-[var(--color-text-muted)] hover:text-primary transition-colors flex items-center gap-2">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar ao Site
                     </a>
+                    <button id="logout-btn" class="hidden text-sm font-medium text-[var(--color-text-muted)] hover:text-red-500 transition-colors flex items-center gap-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Sair
+                    </button>
                     <button id="theme-toggle" aria-label="Alternar Tema" class="p-2 flex items-center justify-center rounded-full hover:bg-[var(--color-bg)] transition-colors text-[var(--color-text-muted)] hover:text-primary">
                         <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
                     </button>
@@ -102,8 +105,53 @@
         </div>
     </nav>
 
+    <!-- Login Container -->
+    <div id="login-container" class="pt-32 pb-20 min-h-screen flex items-center justify-center px-4">
+        <div class="glass-card rounded-2xl p-8 max-w-md w-full shadow-xl border border-[var(--color-border)]">
+            <div class="text-center mb-8">
+                <i data-lucide="lock" class="w-12 h-12 text-primary mx-auto mb-4"></i>
+                <h2 class="text-2xl font-bold text-[var(--color-heading)]">Acesso Restrito</h2>
+                <p class="text-[var(--color-text-muted)] mt-2">Faça login para acessar o dashboard.</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-[var(--color-text)] mb-2">E-mail</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="mail" class="w-5 h-5 text-[var(--color-text-muted)]"></i>
+                        </div>
+                        <input type="email" id="email" required
+                            class="block w-full pl-10 pr-3 py-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-bg)] text-[var(--color-heading)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                            placeholder="seu@email.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-[var(--color-text)] mb-2">Senha</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="key" class="w-5 h-5 text-[var(--color-text-muted)]"></i>
+                        </div>
+                        <input type="password" id="password" required
+                            class="block w-full pl-10 pr-3 py-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-bg)] text-[var(--color-heading)] placeholder-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div id="login-error" class="hidden text-red-500 text-sm font-medium text-center">
+                    Credenciais inválidas.
+                </div>
+
+                <button type="submit" id="login-submit-btn" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-[var(--color-bg)] transition-all">
+                    <span>Entrar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Main Content -->
-    <main class="pt-32 pb-20 min-h-screen">
+    <main id="dashboard-content" class="hidden pt-32 pb-20 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-end mb-8">
                 <div>
