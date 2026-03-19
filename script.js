@@ -217,11 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Verifica tema salvo ou prefência do sistema
     const currentTheme = localStorage.getItem('theme');
-    if (currentTheme === 'light') {
+    if (currentTheme === 'dark') {
+        document.documentElement.classList.remove('light-mode');
+        themeIcon.setAttribute('data-lucide', 'sun');
+    } else {
         document.documentElement.classList.add('light-mode');
         themeIcon.setAttribute('data-lucide', 'moon');
-    } else {
-        themeIcon.setAttribute('data-lucide', 'sun');
     }
 
     // Re-renderiza ícones do Lucide

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR" class="scroll-smooth light-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -976,7 +976,7 @@
 
     <!-- MODAL DE CONTATO -->
     <div id="contactModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[var(--color-bg)]/80 backdrop-blur-md transition-opacity duration-300">
-        <div class="modal-content relative w-full max-w-lg glass-card rounded-2xl p-6 sm:p-8 border border-primary/20 shadow-[0_0_50px_rgba(59,130,246,0.15)] bg-[var(--color-card-bg)] transform scale-95 opacity-0 transition-all duration-300 ease-out overflow-hidden">
+        <div class="modal-content relative w-full max-w-lg glass-card rounded-2xl p-6 sm:p-8 border border-primary/20 shadow-[0_0_50px_rgba(59,130,246,0.15)] bg-[var(--color-card-bg)] transform scale-95 opacity-0 transition-all duration-300 ease-out overflow-x-hidden overflow-y-auto max-h-[90vh]">
             
             <!-- Glow decoration -->
             <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -1079,6 +1079,7 @@
     </a>
 
     <!-- SCRIPT DE FUNCIONAMENTO (Animações Originais + Integração Supabase) -->
+    <script src="./config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Atualizar ano do copyright
@@ -1093,8 +1094,8 @@
             }
 
             // ======= CONFIGURAÇÃO DO SUPABASE =======
-            const supabaseUrl = 'https://ijwopkartbwzqxsmwwlt.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlqd29wa2FydGJ3enF4c213d2x0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Nzc2NzcsImV4cCI6MjA4OTQ1MzY3N30.lBf3dMkwoQXtUnhiKbE_rxXNUuRywDzsDjvhkQInX60';
+            const supabaseUrl = CONFIG.SUPABASE_URL;
+            const supabaseKey = CONFIG.SUPABASE_KEY;
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
             // Navbar scroll effect
@@ -1329,11 +1330,12 @@
             const themeIcon = document.getElementById('theme-icon');
 
             const currentTheme = localStorage.getItem('theme');
-            if (currentTheme === 'light') {
+            if (currentTheme === 'dark') {
+                document.documentElement.classList.remove('light-mode');
+                if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
+            } else {
                 document.documentElement.classList.add('light-mode');
                 if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
-            } else {
-                if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
             }
 
             if (window.lucide) {
