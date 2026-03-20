@@ -212,3 +212,32 @@
 .animate-subtle-pulse {
     animation: subtle-pulse 2s infinite;
 }
+
+/* Project Modal Styles */
+#projectModal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+#projectModal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#projectModal .glass-card {
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#projectModal.active .glass-card {
+    transform: scale(1);
+}
+
+/* Ensure modal max height and scroll behavior per memory guidelines */
+.modal-content-scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 80vh; /* Leave room for padding */
+}

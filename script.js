@@ -258,3 +258,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Project Detail Modal Logic
+function openProjectModal(cardElement) {
+    const modal = document.getElementById('projectModal');
+    if (!modal) return;
+
+    // Extract data from the clicked card
+    const title = cardElement.querySelector('.project-title')?.textContent || '';
+    const fullText = cardElement.querySelector('.project-description')?.getAttribute('data-full-text') || cardElement.querySelector('.project-description')?.textContent || '';
+    const company = cardElement.querySelector('.project-company')?.textContent || '';
+    
+    // Extract icon HTML (we clone it to avoid moving it from the card)
+    const iconContainer = cardElement.querySelector('.project-icon-container');
+    const iconHtml = iconContainer ? iconContainer.innerHTML : '';
+    const iconBgClass = iconContainer ? Array.from(iconContainer.classList).find(c => c.startsWith('bg-')) : 'bg-primary/10';
+
+    // Extract features
+    const featureItems = cardElement.querySelectorAll('.project-features li');
+    let featuresHtml = '';
+    featureItems.forEach(item => {
+        featuresHtml += `<li class="flex items-center gap-2 text-[var(--color-text-muted)] mb-2">${item.innerHTML}</li>`;
+    });
+
+    // Populate modal
+    document.getElementById('modalProjectTitle').textContent = title;
+    document.getElementById('modalProjectDescription').textContent = fullText;
+    
+    const companyBadge = document.getElementById('modalProjectCompany');
+    if (companyBadge && company) {
+        companyBadge.textContent = company;
+        companyBadge.style.display = 'block';
+    } else if (companyBadge) {
+        companyBadge.style.display = 'none';
+    }
+
+    const modalIconContainer = document.getElementById('modalProjectIcon');
+    if (modalIconContainer) {
+        modalIconContainer.innerHTML = iconHtml;
+        // Apply the same background color class to the modal icon container
+        modalIconContainer.className = `w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${iconBgClass}`;
+        
+        // Re-initialize Lucide icons in the modal if needed
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
+
+    const modalFeatures = document.getElementById('modalProjectFeatures');
+    if (modalFeatures) {
+        modalFeatures.innerHTML = featuresHtml;
+    }
+
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeProjectModal() {
+    const modal = document.getElementById('projectModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+}
+
+// Close Project Modal on outside click
+document.addEventListener('click', (e) => {
+    const projectModal = document.getElementById('projectModal');
+    if (projectModal && e.target === projectModal) {
+        closeProjectModal();
+    }
+});
+
+// Close Project Modal on Escape key
+document.addEventListener('keydown', (e) => {
+    const projectModal = document.getElementById('projectModal');
+    if (e.key === 'Escape' && projectModal && projectModal.classList.contains('active')) {
+        closeProjectModal();
+    }
+});
