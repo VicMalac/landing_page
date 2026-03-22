@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dashboardContent.classList.remove('hidden');
             logoutBtn.classList.remove('hidden');
             fetchLeads();
+            fetchTrackingLinks();
+            fetchAnalytics(); // Default to "all" filter initially
+            setupAnalyticsFilters();
         } else {
             // User is not logged in
             loginContainer.classList.remove('hidden');
@@ -203,6 +206,185 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (window.lucide) {
             lucide.createIcons();
+        }
+    }
+
+    // ======= TRACKING LINKS LOGIC =======
+    const trackingForm = document.getElementById('tracking-form');
+    const trackingTableBody = document.getElementById('tracking-table-body');
+    const campaignFilter = document.getElementById('campaign-filter');
+
+    trackingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('track-name').value;
+        const tag = document.getElementById('track-tag').value;
+        const campaign = document.getElementById('track-campaign').value;
+
+        try {
+            const { data, error } = await supabase
+                .from('tracking_links')
+                .insert([{ name, tag, campaign }]);
+
+            if (error) {
+                if (error.code === '23505') { // Unique violation
+                    alert('Erro: Já existe um link com esta Tag (Parâmetro URL). Escolha outra.');
+                } else {
+                    throw error;
+                }
+                return;
+            }
+
+            // Success
+            trackingForm.reset();
+            fetchTrackingLinks(); // Refresh table
+            
+        } catch (error) {
+            console.error('Error creating tracking link:', error);
+            alert('Erro ao criar link. Verifique o console.');
+        }
+    });
+
+    async function fetchTrackingLinks() {
+        try {
+            const { data, error } = await supabase
+                .from('tracking_links')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            renderTrackingLinks(data);
+            updateCampaignFilterOptions(data);
+            
+        } catch (error) {
+            console.error('Error fetching tracking links:', error);
+            trackingTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Erro ao carregar links.</td></tr>`;
+        }
+    }
+
+    function renderTrackingLinks(links) {
+        if (!links || links.length === 0) {
+            trackingTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-[var(--color-text-muted)]">Nenhum link criado ainda.</td></tr>`;
+            return;
+        }
+
+        trackingTableBody.innerHTML = '';
+        const baseUrl = window.location.origin;
+
+        links.forEach(link => {
+            const generatedUrl = `${baseUrl}?ref=${escapeHTML(link.tag)}`;
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-[var(--color-section-alt)] transition-colors duration-200';
+
+            tr.innerHTML = `
+                <td class="p-4 font-medium text-[var(--color-heading)]">${escapeHTML(link.name)}</td>
+                <td class="p-4">
+                    <div class="flex items-center gap-2">
+                        <input type="text" readonly value="${generatedUrl}" class="bg-[var(--color-bg)] text-xs text-[var(--color-text-muted)] px-2 py-1 rounded border border-[var(--color-border)] w-48 focus:outline-none">
+                        <button onclick="navigator.clipboard.writeText('${generatedUrl}').then(() => alert('Link copiado!'))" class="text-primary hover:text-primary-dark transition-colors" title="Copiar Link">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="p-4 text-sm text-[var(--color-text-muted)]">${escapeHTML(link.campaign || '-')}</td>
+                <td class="p-4">
+                    <button class="text-red-500 hover:text-red-700 transition-colors delete-link-btn" data-id="${link.id}" title="Excluir Link">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </td>
+            `;
+            trackingTableBody.appendChild(tr);
+        });
+
+        // Add delete listeners
+        document.querySelectorAll('.delete-link-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                if (confirm('Tem certeza que deseja excluir este link? O rastreamento de acessos futuros por essa tag não será mais filtrado nominalmente.')) {
+                    try {
+                        const { error } = await supabase.from('tracking_links').delete().eq('id', id);
+                        if (error) throw error;
+                        fetchTrackingLinks(); // Refresh
+                    } catch (error) {
+                        console.error('Error deleting link:', error);
+                        alert('Erro ao excluir link.');
+                    }
+                }
+            });
+        });
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function updateCampaignFilterOptions(links) {
+        // Keep "all" and "none" (direct), then append the dynamic ones
+        let optionsHTML = `
+            <option value="all">Todas as origens</option>
+            <option value="none">Tráfego Direto (Sem tag)</option>
+        `;
+        
+        if (links && links.length > 0) {
+            optionsHTML += `<optgroup label="Campanhas Ativas">`;
+            links.forEach(link => {
+                optionsHTML += `<option value="${escapeHTML(link.tag)}">${escapeHTML(link.name)} (${escapeHTML(link.tag)})</option>`;
+            });
+            optionsHTML += `</optgroup>`;
+        }
+        
+        // Save currently selected value to restore after update
+        const currentVal = campaignFilter.value;
+        campaignFilter.innerHTML = optionsHTML;
+        
+        // Try to restore previous selection if it still exists
+        const optionExists = Array.from(campaignFilter.options).some(opt => opt.value === currentVal);
+        if (optionExists) campaignFilter.value = currentVal;
+    }
+
+    function setupAnalyticsFilters() {
+        campaignFilter.addEventListener('change', (e) => {
+            fetchAnalytics(e.target.value);
+        });
+    }
+
+    // ======= FETCH AND RENDER ANALYTICS =======
+    async function fetchAnalytics(filterTag = 'all') {
+        try {
+            let query = supabase.from('analytics').select('*');
+            
+            // Apply filtering logic
+            if (filterTag === 'none') {
+                query = query.is('tracking_tag', null);
+            } else if (filterTag !== 'all') {
+                query = query.eq('tracking_tag', filterTag);
+            }
+
+            const { data, error } = await query;
+
+            if (error) throw error;
+
+            let views = 0;
+            let whatsapp = 0;
+            let forms = 0;
+
+            if (data) {
+                data.forEach(event => {
+                    if (event.event_type === 'page_view') views++;
+                    if (event.event_type === 'whatsapp_click') whatsapp++;
+                    if (event.event_type === 'form_submit') forms++;
+                });
+            }
+
+            // Animate number transition
+            document.getElementById('stat-views').textContent = views;
+            document.getElementById('stat-whatsapp').textContent = whatsapp;
+            document.getElementById('stat-forms').textContent = forms;
+
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
+            document.getElementById('stat-views').textContent = 'Erro';
+            document.getElementById('stat-whatsapp').textContent = 'Erro';
+            document.getElementById('stat-forms').textContent = 'Erro';
         }
     }
 

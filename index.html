@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="pt-BR" class="scroll-smooth light-mode overflow-x-hidden">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SaaS Ecosystem | Engenharia de Software</title>
+    
+    <!-- Preconnect / DNS-Prefetch para otimização de LCP -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://gugrksgftgsvhchgexof.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.clarity.ms">
+
+    <link rel="icon" href="./imgs/logo.png" />
+
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -18,14 +33,6 @@
         })(window, document, "clarity", "script", "px5h9y8h3u");
     </script>
     
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SaaS Ecosystem | Engenharia de Software</title>
-    <link
-      rel="icon"
-      href="./imgs/logo.png"
-    />
-
     <!-- Tailwind CSS -->
     <script>
       // Suppress Tailwind CDN production warning
@@ -45,11 +52,11 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons (Defer to not block rendering) -->
+    <script defer src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase JS Client (Defer) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
       tailwind.config = {
@@ -143,7 +150,7 @@
       .reveal {
         opacity: 0;
         transform: translateY(40px);
-        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
       }
       .reveal.active {
         opacity: 1;
@@ -153,7 +160,7 @@
       .reveal-left {
         opacity: 0;
         transform: translateX(-40px);
-        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
       }
       .reveal-left.active {
         opacity: 1;
@@ -163,7 +170,7 @@
       .reveal-right {
         opacity: 0;
         transform: translateX(40px);
-        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
       }
       .reveal-right.active {
         opacity: 1;
@@ -173,7 +180,7 @@
       .reveal-scale {
         opacity: 0;
         transform: scale(0.9);
-        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
       }
       .reveal-scale.active {
         opacity: 1;
@@ -359,19 +366,21 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <!-- Background Animated Blobs -->
+    <!-- Heavy animations disabled on mobile (hidden md:block) for performance -->
     <div
-      class="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden"
+      class="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden hidden md:block"
     >
       <div
         class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animate-float-slow"
+        style="will-change: transform"
       ></div>
       <div
         class="absolute top-[20%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-2000 animate-float-slow"
-        style="animation-delay: 2s"
+        style="animation-delay: 2s; will-change: transform"
       ></div>
       <div
         class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-4000 animate-float-slow"
-        style="animation-delay: 4s"
+        style="animation-delay: 4s; will-change: transform"
       ></div>
     </div>
 
@@ -383,7 +392,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
           <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-            <img src="./imgs/logo.png" alt="Logo" class="w-8 h-8 bg-white/90 p-1 rounded-md" />
+            <img src="./imgs/logo.png" alt="Logo" fetchpriority="high" class="w-8 h-8 bg-white/90 p-1 rounded-md" />
             <span
               class="text-[var(--color-heading)] font-bold text-xl tracking-wider"
               >Clari<span class="text-primary">tio</span></span
@@ -430,7 +439,8 @@
       class="relative z-10 pt-32 pb-20 lg:pt-48 lg:pb-32 min-h-screen flex items-center"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="reveal-left">
+        <!-- Removido 'reveal-left' do hero para não bloquear LCP com opacity: 0 -->
+        <div>
           <!-- Micro-proof 1 -->
           <div class="flex justify-center mb-6">
             <span
@@ -446,8 +456,10 @@
           >
             PARE DE APAGAR INCÊNDIOS
           </span>
+          <!-- Adicionado fetchpriority high no elemento LCP text-based (H1) e removida classe word-reveal de LCP -->
           <h1
-            class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-[var(--color-heading)] tracking-tight mb-8 leading-tight word-reveal"
+            class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-[var(--color-heading)] tracking-tight mb-8 leading-tight opacity-100 transform-none transition-none"
+            style="will-change: auto;"
           >
             <span>Se sua empresa depende de planilhas,</span>
             <br class="hidden md:block" />
@@ -1775,7 +1787,7 @@
         </button>
         <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-8" onclick="if(event.target === this) closeFullscreenImage()">
             <!-- Imagem não fica mais travada na altura máxima, permitindo zoom natural em dispositivos móveis -->
-            <img id="fullscreenImage" src="" alt="Fullscreen Project View" class="max-w-full h-auto rounded-lg shadow-2xl transform scale-95 transition-transform duration-300 pointer-events-auto" />
+            <img id="fullscreenImage" src="" alt="Fullscreen Project View" class="max-w-full h-auto rounded-lg shadow-2xl transform scale-95 transition-transform duration-300" />
         </div>
     </div>
 
@@ -1981,9 +1993,9 @@
     </a>
 
     <!-- SCRIPT DE FUNCIONAMENTO (Animações Originais + Integração Supabase) -->
-    <script src="./config.js"></script>
-    <script src="./projects.js"></script>
-    <script>
+    <script defer src="./config.js"></script>
+    <script defer src="./projects.js"></script>
+    <script defer>
       document.addEventListener("DOMContentLoaded", () => {
         // Atualizar ano do copyright
         const yearSpan = document.getElementById("current-year");
@@ -2001,9 +2013,75 @@
         const supabaseKey = CONFIG.SUPABASE_KEY;
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Navbar scroll effect
+        // ======= SISTEMA DE ANALYTICS PRÓPRIO =======
+        // Verifica se há parâmetros UTM / ref na URL e salva na sessão
+        const urlParams = new URLSearchParams(window.location.search);
+        let trackingTag = urlParams.get('ref') || urlParams.get('utm_campaign');
+        
+        // Se houver apenas a chave sem '?ref=', como '?instagram1'
+        if (!trackingTag) {
+            for (const [key, value] of urlParams.entries()) {
+                if (value === '') {
+                    trackingTag = key;
+                    break;
+                }
+            }
+        }
+
+        if (trackingTag) {
+            sessionStorage.setItem('claritio_tracking_tag', trackingTag);
+        } else {
+            trackingTag = sessionStorage.getItem('claritio_tracking_tag'); // Recupera caso já exista na sessão
+        }
+
+        async function trackEvent(eventType) {
+            try {
+                // Tenta pegar o ID de sessão do sessionStorage, ou cria um novo
+                let sessionId = sessionStorage.getItem('claritio_session_id');
+                if (!sessionId) {
+                    sessionId = 'sess_' + Math.random().toString(36).substring(2, 15);
+                    sessionStorage.setItem('claritio_session_id', sessionId);
+                }
+
+                const payload = {
+                    event_type: eventType,
+                    page_path: window.location.pathname,
+                    user_agent: navigator.userAgent,
+                    session_id: sessionId
+                };
+
+                // Adiciona o tracking_tag se existir
+                if (trackingTag) {
+                    payload.tracking_tag = trackingTag;
+                }
+
+                await supabase.from('analytics').insert([payload]);
+            } catch (error) {
+                console.error('Erro ao registrar analytics:', error);
+            }
+        }
+
+        // Registrar Page View quando a página carregar (apenas 1 vez por sessão para não poluir)
+        if (!sessionStorage.getItem('page_view_tracked')) {
+            trackEvent('page_view');
+            sessionStorage.setItem('page_view_tracked', 'true');
+        }
+
+        // Modificar botões do WhatsApp para registrar cliques
+        document.querySelectorAll('a[href*="wa.me"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                trackEvent('whatsapp_click');
+            });
+        });
+
+        // Scroll Optimization logic (throttling with requestAnimationFrame)
+        let isScrolling = false;
         const navbar = document.getElementById("navbar");
-        window.addEventListener("scroll", () => {
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll(".nav-link");
+
+        function handleScroll() {
+          // Navbar scroll effect
           if (window.scrollY > 20) {
             navbar.classList.add(
               "shadow-lg",
@@ -2021,7 +2099,33 @@
             );
             navbar.classList.add("border-b-0");
           }
-        });
+
+          // Scrollspy Highlight
+          let current = "";
+          sections.forEach((section) => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (scrollY >= sectionTop - sectionHeight / 3) {
+              current = section.getAttribute("id");
+            }
+          });
+
+          navLinks.forEach((link) => {
+            link.classList.remove("active", "text-primary");
+            if (link.getAttribute("href").includes(current)) {
+              link.classList.add("active", "text-primary");
+            }
+          });
+
+          isScrolling = false;
+        }
+
+        window.addEventListener("scroll", () => {
+          if (!isScrolling) {
+            window.requestAnimationFrame(handleScroll);
+            isScrolling = true;
+          }
+        }, { passive: true });
 
         // Intersection Observer for Scroll Animations
         const observerOptions = {
@@ -2097,6 +2201,7 @@
         // Glow Interactive Effect
         document.querySelectorAll(".glow-effect").forEach((card) => {
           card.addEventListener("mousemove", (e) => {
+            if (window.innerWidth < 768) return; // Disable on mobile to save performance
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -2108,6 +2213,7 @@
         // 3D Tilt Effect
         document.querySelectorAll(".tilt-card").forEach((card) => {
           card.addEventListener("mousemove", (e) => {
+            if (window.innerWidth < 768) return; // Disable on mobile to save performance
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -2122,29 +2228,8 @@
           });
 
           card.addEventListener("mouseleave", () => {
+            if (window.innerWidth < 768) return; // Disable on mobile to save performance
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-          });
-        });
-
-        // Scrollspy Highlight
-        const sections = document.querySelectorAll("section");
-        const navLinks = document.querySelectorAll(".nav-link");
-
-        window.addEventListener("scroll", () => {
-          let current = "";
-          sections.forEach((section) => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (scrollY >= sectionTop - sectionHeight / 3) {
-              current = section.getAttribute("id");
-            }
-          });
-
-          navLinks.forEach((link) => {
-            link.classList.remove("active", "text-primary");
-            if (link.getAttribute("href").includes(current)) {
-              link.classList.add("active", "text-primary");
-            }
           });
         });
 
@@ -2207,6 +2292,9 @@
               .insert([leadData]);
 
             if (error) throw error;
+
+            // Registrar no Analytics
+            await trackEvent('form_submit');
 
             // Mensagem de Sucesso UI
             submitBtn.innerHTML =
@@ -2320,6 +2408,7 @@
           modal.classList.remove("active");
           modal.classList.add("opacity-0", "pointer-events-none");
           document.body.style.overflow = ""; // Restore scrolling
+          window.activeModalProjectId = null; // Clear the active project to prevent bugs
         }
       }
 

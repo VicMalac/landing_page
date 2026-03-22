@@ -327,6 +327,7 @@ function closeProjectModal() {
     const modal = document.getElementById('projectModal');
     if (modal) {
         modal.classList.remove('active');
+        modal.classList.add('opacity-0', 'pointer-events-none');
         document.body.style.overflow = ''; // Restore scrolling
     }
 }

@@ -152,22 +152,142 @@
 
     <!-- Main Content -->
     <main id="dashboard-content" class="hidden pt-32 pb-20 min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-end mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-[var(--color-heading)] mb-2 flex items-center gap-3">
-                        <i data-lucide="users" class="w-8 h-8 text-primary"></i>
-                        Leads Cadastrados
-                    </h1>
-                    <p class="text-[var(--color-text-muted)]">Controle e visualize as empresas interessadas nos seus serviços.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            
+            <!-- Visão Geral (Analytics) -->
+            <section id="analytics-section">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--color-heading)] mb-2 flex items-center gap-3">
+                            <i data-lucide="bar-chart-2" class="w-6 h-6 text-primary"></i>
+                            Visão Geral
+                        </h2>
+                        <p class="text-[var(--color-text-muted)] text-sm">Resumo de tráfego e interações.</p>
+                    </div>
+                    
+                    <!-- Filtro de Campanhas -->
+                    <div class="w-full sm:w-auto">
+                        <select id="campaign-filter" class="w-full sm:w-64 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-heading)] text-sm rounded-lg focus:ring-primary focus:border-primary block p-2.5 transition-colors">
+                            <option value="all">Todas as origens</option>
+                            <option value="none">Tráfego Direto (Sem tag)</option>
+                            <!-- Opções carregadas dinamicamente -->
+                        </select>
+                    </div>
                 </div>
-                <div class="text-sm font-medium px-4 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center gap-2 shadow-sm">
-                    <i data-lucide="database" class="w-4 h-4"></i>
-                    <span id="total-leads">Carregando...</span>
-                </div>
-            </div>
 
-            <!-- Leads Table Area -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Visitas -->
+                    <div class="glass-card rounded-2xl p-6 border border-[var(--color-border)] hover:border-blue-500/30 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                <i data-lucide="eye" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-[var(--color-text)] uppercase tracking-wide">Visitas Totais</h3>
+                        </div>
+                        <div class="text-4xl font-extrabold text-[var(--color-heading)] mb-1" id="stat-views">...</div>
+                        <p class="text-xs text-[var(--color-text-muted)]">Páginas visualizadas</p>
+                    </div>
+
+                    <!-- WhatsApp Clicks -->
+                    <div class="glass-card rounded-2xl p-6 border border-[var(--color-border)] hover:border-green-500/30 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400">
+                                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-[var(--color-text)] uppercase tracking-wide">Cliques WhatsApp</h3>
+                        </div>
+                        <div class="text-4xl font-extrabold text-[var(--color-heading)] mb-1" id="stat-whatsapp">...</div>
+                        <p class="text-xs text-[var(--color-text-muted)]">Interações com o botão</p>
+                    </div>
+
+                    <!-- Formulários Enviados -->
+                    <div class="glass-card rounded-2xl p-6 border border-[var(--color-border)] hover:border-purple-500/30 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
+                                <i data-lucide="send" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-[var(--color-text)] uppercase tracking-wide">Formulários</h3>
+                        </div>
+                        <div class="text-4xl font-extrabold text-[var(--color-heading)] mb-1" id="stat-forms">...</div>
+                        <p class="text-xs text-[var(--color-text-muted)]">Agendamentos solicitados</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Links de Rastreamento -->
+            <section id="tracking-section" class="mt-12">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--color-heading)] mb-2 flex items-center gap-3">
+                            <i data-lucide="link" class="w-6 h-6 text-primary"></i>
+                            Links de Rastreamento
+                        </h2>
+                        <p class="text-[var(--color-text-muted)] text-sm">Crie URLs parametrizadas para rastrear o ROI de diferentes campanhas.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Formulário de Criação -->
+                    <div class="lg:col-span-1 glass-card rounded-2xl p-6 border border-[var(--color-border)]">
+                        <h3 class="text-lg font-semibold text-[var(--color-heading)] mb-4">Novo Link</h3>
+                        <form id="tracking-form" class="space-y-4">
+                            <div>
+                                <label for="track-name" class="block text-sm font-medium text-[var(--color-text)] mb-1">Nome de Identificação</label>
+                                <input type="text" id="track-name" required placeholder="Ex: Campanha Instagram Reels" class="w-full px-4 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-[var(--color-text)]">
+                            </div>
+                            <div>
+                                <label for="track-tag" class="block text-sm font-medium text-[var(--color-text)] mb-1">Tag (Parâmetro URL)</label>
+                                <input type="text" id="track-tag" required placeholder="Ex: insta-reels-1" class="w-full px-4 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-[var(--color-text)]">
+                                <p class="text-xs text-[var(--color-text-muted)] mt-1">Sua URL ficará: claritio.com.br?ref=<strong>tag</strong></p>
+                            </div>
+                            <div>
+                                <label for="track-campaign" class="block text-sm font-medium text-[var(--color-text)] mb-1">Campanha (Opcional)</label>
+                                <input type="text" id="track-campaign" placeholder="Ex: Black Friday" class="w-full px-4 py-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-[var(--color-text)]">
+                            </div>
+                            <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Criar Link
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tabela de Links Existentes -->
+                    <div class="lg:col-span-2 glass-card rounded-2xl border border-[var(--color-border)] overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-[var(--color-border)] text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
+                                        <th class="p-4 text-sm font-semibold uppercase tracking-wider">Nome</th>
+                                        <th class="p-4 text-sm font-semibold uppercase tracking-wider">Link Gerado</th>
+                                        <th class="p-4 text-sm font-semibold uppercase tracking-wider">Campanha</th>
+                                        <th class="p-4 text-sm font-semibold uppercase tracking-wider">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tracking-table-body" class="divide-y divide-[var(--color-border)]">
+                                    <!-- Tracking links loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabela de Leads -->
+            <section id="leads-section" class="mt-12">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[var(--color-heading)] mb-2 flex items-center gap-3">
+                            <i data-lucide="users" class="w-6 h-6 text-primary"></i>
+                            Leads Cadastrados
+                        </h2>
+                        <p class="text-[var(--color-text-muted)] text-sm">Controle e visualize as empresas interessadas nos seus serviços.</p>
+                    </div>
+                    <div class="text-sm font-medium px-4 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center gap-2 shadow-sm">
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                        <span id="total-leads">Carregando...</span>
+                    </div>
+                </div>
+
+                <!-- Leads Table Area -->
             <div class="glass-card rounded-2xl overflow-hidden shadow-xl border border-[var(--color-border)]">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -193,6 +313,7 @@
                     </table>
                 </div>
             </div>
+            </section>
         </div>
     </main>
 
