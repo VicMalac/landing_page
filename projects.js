@@ -105,6 +105,7 @@ const projectsData = [
     id: "lp-ai",
     company: "VIA DOLCE JOIAS",
     category: "Marketing & IA",
+    imageCount: 2,
     title: "LP & Estúdio Fotográfico IA",
     shortDescription: "Criação de LP que aumentou a captação em 20%. Sistema de IA usando Gemini e OpenAI para transformar fotos amadoras de produtos em imagens profissionais de estúdio.",
     fullDescription: "Criação de Landing Page que aumentou a captação de leads em 20%. Desenvolvimento de um sistema integrado onde o usuário envia fotos simples de produtos e o sistema retorna imagens com estilo 100% profissional. Utiliza tokens do Gemini (Google AI Studio) e API OpenAI, economizando milhares de reais em assinaturas externas.",
@@ -160,9 +161,16 @@ function createProjectImage(id) {
     let currentIdx = 0;
     
     const imgElement = document.createElement('img');
-    imgElement.className = "w-full h-48 object-cover object-top border-b border-[var(--color-border)] rounded-t-2xl";
-    imgElement.alt = "Project Preview";
+    imgElement.className = "w-full h-48 object-cover object-top border-b border-[var(--color-border)] rounded-t-2xl transition-opacity duration-300";
+    imgElement.alt = `Preview do projeto ${id}`;
     
+    // Lazy loading properties for performance on slow connections
+    imgElement.loading = "lazy";
+    imgElement.decoding = "async";
+    
+    // Start with low opacity for smooth load transition
+    imgElement.style.opacity = "0";
+
     // Fallback logic
     imgElement.onerror = function() {
         currentIdx++;
@@ -173,6 +181,10 @@ function createProjectImage(id) {
             this.style.display = 'none';
         }
     };
+
+    imgElement.onload = function() {
+        this.style.opacity = "1";
+    }
     
     // Tenta primeiro PNG
     imgElement.src = `./imgs/${id}${imgExtensions[0]}`;
@@ -280,8 +292,14 @@ function renderProjects() {
 
 document.addEventListener('DOMContentLoaded', renderProjects);
 
+// Cache Global de Imagens Resolvidas para não testar a rede duas vezes (ex: modal)
+window.projectImageCache = {};
+
 // Global Modal Functions
+window.activeModalProjectId = null;
+
 window.openProjectModal = function(projectId) {
+    window.activeModalProjectId = projectId;
     const project = projectsData.find(p => p.id === projectId);
     if (!project) return;
 
@@ -326,25 +344,206 @@ window.openProjectModal = function(projectId) {
     // Imagem do Modal
     const imgContainer = document.getElementById('modalProjectImageContainer');
     const imgEl = document.getElementById('modalProjectImage');
+    const scrollArea = document.getElementById('modalImageScrollArea');
+    const scrollIndicator = document.getElementById('modalScrollIndicator');
+    const thumbnailsContainer = document.getElementById('modalProjectThumbnails');
     
-    // Testar as imagens
-    const imgExtensions = ['.png', '.jpg', '.gif'];
-    let currentIdx = 0;
+    if (imgContainer) imgContainer.classList.add('hidden');
+    if (imgEl) imgEl.src = '';
     
-    imgEl.onerror = function() {
-        currentIdx++;
-        if (currentIdx < imgExtensions.length) {
-            this.src = `./imgs/${project.id}${imgExtensions[currentIdx]}`;
-        } else {
-            imgContainer.classList.add('hidden'); // Oculta se não tiver nenhuma
-        }
-    };
-    
-    imgEl.onload = function() {
-        imgContainer.classList.remove('hidden');
+    if (thumbnailsContainer) {
+        thumbnailsContainer.innerHTML = '';
+        thumbnailsContainer.classList.add('hidden');
     }
     
-    imgEl.src = `./imgs/${project.id}${imgExtensions[0]}`;
+    const imgExtensions = ['.png', '.jpg', '.gif'];
+    let validImages = [];
+
+    const createThumbnail = (src, isFirst) => {
+        const thumbWrapper = document.createElement('div');
+        thumbWrapper.className = `shrink-0 w-20 h-16 rounded-md overflow-hidden border-2 cursor-pointer transition-all hover:opacity-100 ${isFirst ? 'border-primary opacity-100' : 'border-transparent opacity-60'}`;
+        thumbWrapper.onclick = () => {
+            imgEl.src = src;
+            Array.from(thumbnailsContainer.children).forEach(child => {
+                child.classList.remove('border-primary', 'opacity-100');
+                child.classList.add('border-transparent', 'opacity-60');
+            });
+            thumbWrapper.classList.remove('border-transparent', 'opacity-60');
+            thumbWrapper.classList.add('border-primary', 'opacity-100');
+        };
+
+        const thumbImg = document.createElement('img');
+        thumbImg.src = src;
+        thumbImg.className = "w-full h-full object-cover";
+        thumbWrapper.appendChild(thumbImg);
+        
+        return thumbWrapper;
+    };
+
+    const numImages = project.imageCount || 1;
+    let loadedMainImage = false;
+    let mainImgExtension = '';
+
+    const loadImages = () => {
+        if (window.activeModalProjectId !== project.id) return;
+
+        // Check if images are already cached AND fully loaded
+        if (window.projectImageCache[project.id] && window.projectImageCache[project.id].status === 'loaded') {
+            const cachedImages = window.projectImageCache[project.id].images;
+            
+            if (cachedImages.length > 0) {
+                imgContainer.classList.remove('hidden');
+                imgEl.src = cachedImages[0];
+                
+                if (thumbnailsContainer && cachedImages.length > 1) {
+                    thumbnailsContainer.classList.remove('hidden');
+                    cachedImages.forEach((src, idx) => {
+                        thumbnailsContainer.appendChild(createThumbnail(src, idx === 0));
+                    });
+                }
+            } else {
+                imgContainer.classList.add('hidden');
+            }
+            return; // Exit early since images are ready
+        }
+        
+        // Se já está carregando em background por outro clique, não refaça os loaders,
+        // apenas continue (ou você poderia se inscrever para receber o resultado,
+        // mas em modals simples, basta deixar o background terminar e recarregar).
+        if (window.projectImageCache[project.id] && window.projectImageCache[project.id].status === 'loading') {
+            // Em uma situação ideal, você aguardaria a promise, mas para ser simples e não travar:
+            // Vamos apenas rodar a lógica para garantir que a UI deste modal se preencha.
+            // Para não causar chamadas de rede redundantes desnecessárias, deixaremos
+            // o navegador cuidar do cache de imagem nativo.
+        }
+
+        // Initialize cache for this project as loading
+        window.projectImageCache[project.id] = { status: 'loading', images: [] };
+        let localLoadedImagesCount = 0;
+
+        const checkCompletion = () => {
+            if (localLoadedImagesCount === numImages || (!loadedMainImage && localLoadedImagesCount > 0)) {
+                // Marcar cache como completo quando terminar
+                window.projectImageCache[project.id].status = 'loaded';
+            }
+        };
+
+        let mainImgExtIdx = 0;
+        const tryMainImage = () => {
+            if (window.activeModalProjectId !== project.id) return;
+
+            if (mainImgExtIdx < imgExtensions.length) {
+                const ext = imgExtensions[mainImgExtIdx];
+                const src = `./imgs/${project.id}${ext}`;
+                const tester = new Image();
+                
+                tester.onload = () => {
+                    // Adiciona a imagem ao cache
+                    window.projectImageCache[project.id].images.push(src);
+                    localLoadedImagesCount++;
+                    
+                    if (window.activeModalProjectId !== project.id) {
+                         checkCompletion();
+                         return; // Continua carregando pro cache, mas para de mexer no DOM
+                    }
+                    
+                    loadedMainImage = true;
+                    mainImgExtension = ext;
+                    
+                    imgContainer.classList.remove('hidden');
+                    imgEl.src = src;
+                    
+                    if (thumbnailsContainer && numImages > 1) {
+                        thumbnailsContainer.appendChild(createThumbnail(src, true));
+                    }
+                    
+                    if (numImages > 1) {
+                        for (let i = 2; i <= numImages; i++) {
+                            loadAdditionalImage(i);
+                        }
+                    } else {
+                        checkCompletion();
+                    }
+                };
+                tester.onerror = () => {
+                    if (window.activeModalProjectId !== project.id) return;
+                    mainImgExtIdx++;
+                    tryMainImage();
+                };
+                tester.src = src;
+            } else {
+                imgContainer.classList.add('hidden');
+                localLoadedImagesCount++; // marca como testado para fechar
+                checkCompletion();
+            }
+        };
+
+        const loadAdditionalImage = (index) => {
+            const src = `./imgs/${project.id}-${index}${mainImgExtension}`;
+            const tester = new Image();
+            
+            tester.onload = () => {
+                // Adiciona ao cache incondicionalmente
+                window.projectImageCache[project.id].images.push(src);
+                localLoadedImagesCount++;
+                checkCompletion();
+                
+                if (window.activeModalProjectId !== project.id) return;
+                
+                if (thumbnailsContainer) {
+                    thumbnailsContainer.appendChild(createThumbnail(src, false));
+                    // Ordenar as imagens e miniaturas caso terminem em ordens diferentes
+                    if (window.projectImageCache[project.id].images.length > 1) {
+                        thumbnailsContainer.classList.remove('hidden');
+                    }
+                }
+            };
+            tester.onerror = () => {
+                localLoadedImagesCount++;
+                checkCompletion();
+            };
+            tester.src = src;
+        };
+
+        tryMainImage();
+    };
+
+    loadImages();
+
+    // Lógica Específica para Imagens Verticais (ex: 'app')
+    if (scrollArea) {
+        scrollArea.scrollTop = 0;
+        
+        if (project.id === 'app') {
+            scrollArea.classList.add('max-h-[400px]', 'overflow-y-auto');
+            scrollArea.classList.remove('overflow-hidden');
+            
+            if (scrollIndicator) {
+                scrollIndicator.classList.remove('hidden');
+                scrollIndicator.classList.remove('opacity-0');
+                
+                let isHidden = false;
+                
+                scrollArea.onscroll = () => {
+                    const shouldHide = scrollArea.scrollTop > 10;
+                    if (shouldHide && !isHidden) {
+                        scrollIndicator.classList.add('opacity-0');
+                        isHidden = true;
+                    } else if (!shouldHide && isHidden) {
+                        scrollIndicator.classList.remove('opacity-0');
+                        isHidden = false;
+                    }
+                };
+            }
+        } else {
+            scrollArea.classList.remove('max-h-[400px]', 'overflow-y-auto');
+            scrollArea.classList.add('overflow-hidden');
+            scrollArea.onscroll = null;
+            if (scrollIndicator) {
+                scrollIndicator.classList.add('hidden');
+            }
+        }
+    }
 
     // Mostrar modal
     modal.classList.add('active');

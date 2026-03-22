@@ -195,6 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.classList.add('bg-green-500', 'hover:bg-green-600');
             submitBtn.classList.remove('bg-primary', 'hover:bg-blue-600');
             
+            // Disparar evento de conversão para GTM/Clarity
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({'event': 'form_submission_success'});
+
             setTimeout(() => {
                 closeModal();
                 form.reset();
@@ -316,6 +320,10 @@ function openProjectModal(cardElement) {
 }
 
 function closeProjectModal() {
+    // Clear active modal ID so background requests stop trying to append thumbnails
+    if (window.activeModalProjectId) {
+        window.activeModalProjectId = null;
+    }
     const modal = document.getElementById('projectModal');
     if (modal) {
         modal.classList.remove('active');
