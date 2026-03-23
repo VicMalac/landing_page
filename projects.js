@@ -121,7 +121,7 @@ const projectsData = [
   },
   {
     id: "planner",
-    company: "Fatec",
+    company: "FATEC",
     category: "Produtividade",
     title: "Super Planner Acadêmico",
     shortDescription: "Sistema de produtividade completo com notas estilo Notion, rotina, treinos, finanças, técnica Pomodoro e mapas mentais.",
@@ -138,7 +138,7 @@ const projectsData = [
   },
   {
     id: "cofre",
-    company: "Fatec",
+    company: "FATEC",
     category: "Segurança & Gamificação",
     title: "Cofre Pessoal & Gamificação",
     shortDescription: "Módulo de segurança para senhas/cartões, matriz de decisões ponderada e comunidade com sistema de XP, loja e ranking.",
@@ -289,8 +289,6 @@ function renderProjects() {
         window.lucide.createIcons();
     }
 }
-
-document.addEventListener('DOMContentLoaded', renderProjects);
 
 // Cache Global de Imagens Resolvidas para não testar a rede duas vezes (ex: modal)
 window.projectImageCache = {};
